@@ -1,0 +1,38 @@
+{% extends "partials/template.twig" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row mt-4">
+            <div class="col-12">
+                <h3 class="text-right">خرید کالا</h3>
+            </div>
+
+            <p class="text-danger mb-2" id="list_old_discount">  </p>
+            <p class="text-danger mb-2" id="list_error_code_product">  </p>
+            <p id="success_insert_product" class="text-success mb-2"></p>
+
+
+            {#<form id="form" action="purchaseProduct" method="post">#}
+            <form class="mt-4 needs-validation" novalidate="" id="myForm">
+                <div class="col-12 row">
+                    <div class="col-lg-3 col-md-12 col-sm-12 col-12">
+                        <input type="number" name="mobile" id="mobile" class="form-control" placeholder="شماره موبایل">
+                        <div class="invalid-feedback">
+                            شماره تماس خود را وارد کنید
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-12 col-sm-12 col-12">
+                        <a href="#" class="btn btn-primary" id="btn-add-product">اضافه کردن کد کالا</a>
+                    </div>
+                </div>
+                <div class="row mt-2 box-product-code">
+                </div>
+            </form>
+
+            <div class="col-lg-2 col-md-12 col-sm-12 col-12">
+                <button class="btn btn-success mt-2" type="button" id="btn-save-product">ثبت کالا</button>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

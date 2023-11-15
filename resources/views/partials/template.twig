@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% block header_content %}
+        <meta name="description" content="">
+        <meta name="author" content="{{ author }}">
+        <link rel="icon" href="favicon.ico">
+        <title>محصولات پزشکی</title>
+
+    {% endblock %}
+
+
+    {% block styles %}
+        {#Bootstrap  CSS#}
+        <link rel="stylesheet" href="/public/css/bootstrap.min.css">
+        <link rel="stylesheet" href="/public/css/app.css">
+        <link rel="stylesheet" href="/public/css/style.css">
+        <link rel="stylesheet" href="/public/css/font-awesome.min.css">
+    {% endblock %}
+
+</head>
+
+<body>
+
+{% block navigation %}
+
+    <nav class="navbar navbar-expand-md navbar-dark bg-primary">
+        <a class="navbar-brand" href="#">{{ appname }}</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse"
+                data-target="#nav" aria-controls="navbarsExampleDefault" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="nav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">محصولات پزشکی</a>
+                </li>
+
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control text-right mr-sm-2" type="text" placeholder="جستجو" aria-label="Search">
+            </form>
+        </div>
+    </nav>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+
+        <div class="text-center mt-4">
+            No content added
+        </div>
+
+
+    </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+
+    {# Bootstrap core JavaScript#}
+    <script src="/public/js/jquery-1.11.3.min.js"></script>
+    <script src="/public/js/popper.min.js"></script>
+    <script src="/public/js/bootstrap.min.js"></script>
+    <script src="/public/js/amagiloader.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#btn-save-product').attr('disabled', true);
+        });
+        ////////////////////////////////////////////////////////////////////////////////////////
+        let addedCounter = 1;
+        $('#btn-add-product').click(function (e) {
+            $('#btn-save-product').attr('disabled', false);
+            document.querySelector(".box-product-code")
+                .insertAdjacentHTML("beforeend", `
+       <div class="col-12 row box-products" id="box-product${addedCounter}"><div class="col-4">
+        <input type="text" placeholder="کد محصول" id="nameProduct${addedCounter}" name="productCode[]" class="form-control mt-2" />
+        <div class="invalid-feedback">
+        کد محصول را وارد کنید
+        </div>
+          </div>
+        <div class="col-8">
+        <button class="btn btn-danger btn-delete" onClick="remove()" id="btn-delete${addedCounter}">حذف</button>
+      </div></div>`);
+            addedCounter += 1;
+        });
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+        function remove() {
+            let id = window.event.target.id;
+            const myArray = id.split("btn-delete");
+            let id_input = "nameProduct" + myArray[1];
+            let id_box_product = "box-product" + myArray[1];
+
+            document.getElementById(id_input).outerHTML = "";
+            document.getElementById(id).outerHTML = "";
+            document.getElementById(id_box_product).outerHTML = "";
+        }
+
+        ////////////////////////////////////////////////////////////////////////////////////////
+        $(document.body).on('click', '#btn-save-product', function (event) {
+            event.preventDefault();
+            AmagiLoader.show();
+            let mobile = $('#mobile').val(),
+                productCode = [],
+                fields = document.getElementsByName("productCode[]");
+
+            for (let i = 0; i < fields.length; i++) {
+                productCode.push(fields[i].value);
+            }
+
+            if (mobile == "" || mobile == null || productCode.length == 0) {
+                $("#myForm").removeClass("needs-validation").addClass("was-validated");
+                setTimeout(() => {
+                    AmagiLoader.hide();
+                }, 1000);
+            } else {
+                $.ajax({
+                    url: "checkCodeProduct",
+                    type: 'post',
+                    data: {
+                        'mobile': mobile,
+                        'productCode': productCode
+                    },
+                    success: function (data) {
+                        setTimeout(() => {
+                            AmagiLoader.hide();
+                        }, 1000);
+                        let result = JSON.parse(data),
+                            list_old_discount = result['list_old_discount'],
+                            list_error_code_product = result['list_error_code_product'];
+
+                        $('#list_old_discount').empty();
+                        $('#list_error_code_product').empty();
+                        $('#success_insert_product').empty();
+
+                        if (list_old_discount.length != 0) {
+                            for (let i = 0; i < list_old_discount.length; i++) {
+                                $('#list_old_discount').append("<p class='text-danger'>کالای تخفیفی با کد " + list_old_discount[i] + " توسط شما قبلا خریداری شده است</p>");
+                            }
+                        }
+                        if (list_error_code_product.length != 0) {
+                            for (let i = 0; i < list_error_code_product.length; i++) {
+                                $('#list_error_code_product').append("<p class='text-danger'>کد کالا " + list_error_code_product[i] + " اشتباه وارد شده است</p>");
+                            }
+                        }
+
+                        if (list_old_discount.length == 0 && list_error_code_product.length == 0) {
+                            $.ajax({
+                                url: "purchaseProduct",
+                                type: 'post',
+                                data: {
+                                    'mobile': mobile,
+                                    'productCode': productCode
+                                },
+                                success: function (data) {
+                                    $('#success_insert_product').empty();
+                                    $('#success_insert_product').append('محصولات با موفقیت خریداری شدند');
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+{% endblock %}
+</body>
+</html>

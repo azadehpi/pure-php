@@ -1,0 +1,20 @@
+RewriteEngine On
+
+#prevent .php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.php [NC,L]
+
+#prevent .html
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^([^\.]+)$ $1.html [NC,L]
+
+#route all request to /index.php
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* index.php/$0 [PT]
+
+#prevent view of htaccess and htpassword files directly
+<Files .* >
+order allow,deny
+deny from all
+</Files>

@@ -1,0 +1,26 @@
+{
+  "name": "murage/mvc",
+  "description": "A simple MVC PHP project template ",
+  "type": "project",
+  "version": "2.0.0",
+  "minimum-stability": "stable",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Murage M.",
+      "email": "hello@mimidots.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.4",
+    "twig/twig": "^2.11.3",
+    "ext-json": "*",
+    "murage/sqlddl": "^1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/",    
+      "":["bootstrap/"]
+    }
+  }
+}
